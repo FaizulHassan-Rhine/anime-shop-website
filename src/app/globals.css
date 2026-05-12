@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply min-h-screen bg-black font-sans text-white antialiased;
+  background-attachment: fixed;
+}
+
+::selection {
+  @apply bg-neon-orange/60 text-white;
+}
+
+.aura-ring {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 0 55px rgba(251, 146, 60, 0.14);
+}
