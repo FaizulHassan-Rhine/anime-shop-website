@@ -59,17 +59,16 @@ export default function ProductCard({ product, index = 0 }) {
       style={{ perspective: 1000 }}
       className="group relative"
     >
-      <Link href={`/cards/${product.id}`} className="block">
-        <motion.div
-          onMouseMove={onMove}
-          onMouseLeave={onLeave}
-          style={{ rotateX, rotateY }}
-          className="relative overflow-hidden rounded-2xl border border-white/10 bg-glass p-3 shadow-card backdrop-blur-xl transition-[box-shadow] duration-300 group-hover:border-neon-orange/50 group-hover:shadow-neon"
-        >
-          <div className="pointer-events-none absolute inset-0 bg-neon-orange/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <motion.div
+        onMouseMove={onMove}
+        onMouseLeave={onLeave}
+        style={{ rotateX, rotateY }}
+        className="relative overflow-hidden rounded-2xl border border-white/10 bg-glass p-3 shadow-card backdrop-blur-xl transition-[box-shadow] duration-300 group-hover:border-neon-orange/50 group-hover:shadow-neon"
+      >
+        <Link href={`/cards/${product.id}`} className="block">
+          <motion.div className="pointer-events-none absolute inset-0 bg-neon-orange/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
           <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-black ring-1 ring-white/10">
-            {/* Replace image: place your PNG at public{product.image} */}
             <Image
               src={product.image}
               alt={product.name}
@@ -104,57 +103,54 @@ export default function ProductCard({ product, index = 0 }) {
                 {product.wave}
               </span>
             </div>
-            <div className="flex items-end justify-between pt-1.5">
-              <div className="flex flex-col">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
-                  Price
-                </span>
-                <p className="font-display text-xl font-bold leading-none text-white">
-                  ${product.price.toFixed(2)}
-                </p>
-              </div>
-              <motion.span
-                layout
-                className="translate-x-1 text-xs font-semibold text-neon-orange opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
-              >
-                View →
-              </motion.span>
+            <div className="flex flex-col pt-1.5">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                Price
+              </span>
+              <p className="font-display text-xl font-bold leading-none text-white">
+                ${product.price.toFixed(2)}
+              </p>
             </div>
           </div>
-        </motion.div>
-      </Link>
+        </Link>
 
-      <motion.button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          addToCart(product.id, 1);
-          setJustAdded(true);
-          if (addResetRef.current) window.clearTimeout(addResetRef.current);
-          addResetRef.current = window.setTimeout(
-            () => setJustAdded(false),
-            900
-          );
-        }}
-        whileTap={{ scale: 0.96 }}
-        animate={justAdded ? { scale: [1, 1.04, 1] } : {}}
-        transition={{ duration: 0.35 }}
-        className={`group/btn relative mt-3 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-4 py-2.5 text-sm font-semibold tracking-wide text-black shadow-[0_10px_30px_-12px_rgba(251,146,60,0.8)] ring-1 ring-white/15 transition-all duration-300 hover:shadow-[0_14px_36px_-10px_rgba(251,146,60,0.8)] hover:ring-white/25 ${
-          justAdded
-            ? "bg-emerald-400"
-            : "bg-neon-orange"
-        }`}
-      >
-        <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/40" />
-        <span className="relative flex items-center gap-2">
-          {justAdded ? (
-            <CheckIcon className="h-4 w-4" />
-          ) : (
-            <BagIcon className="h-4 w-4" />
-          )}
-          {justAdded ? "Added to cart" : "Add to cart"}
-        </span>
-      </motion.button>
+        <div className="relative mt-3 flex gap-2">
+          <Link
+            href={`/cards/${product.id}`}
+            className="flex flex-1 items-center justify-center rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold tracking-wide text-white/80 transition hover:border-white/30 hover:bg-white/[0.05] hover:text-white"
+          >
+            View
+          </Link>
+          <motion.button
+            type="button"
+            onClick={() => {
+              addToCart(product.id, 1);
+              setJustAdded(true);
+              if (addResetRef.current) window.clearTimeout(addResetRef.current);
+              addResetRef.current = window.setTimeout(
+                () => setJustAdded(false),
+                900
+              );
+            }}
+            whileTap={{ scale: 0.96 }}
+            animate={justAdded ? { scale: [1, 1.04, 1] } : {}}
+            transition={{ duration: 0.35 }}
+            className={`group/btn relative flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-xl px-4 py-2.5 text-sm font-semibold tracking-wide text-black shadow-[0_10px_30px_-12px_rgba(251,146,60,0.8)] ring-1 ring-white/15 transition-all duration-300 hover:shadow-[0_14px_36px_-10px_rgba(251,146,60,0.8)] hover:ring-white/25 ${
+              justAdded ? "bg-emerald-400" : "bg-neon-orange"
+            }`}
+          >
+            <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/40" />
+            <span className="relative flex items-center gap-2">
+              {justAdded ? (
+                <CheckIcon className="h-4 w-4" />
+              ) : (
+                <BagIcon className="h-4 w-4" />
+              )}
+              {justAdded ? "Added" : "Add to cart"}
+            </span>
+          </motion.button>
+        </div>
+      </motion.div>
     </motion.article>
   );
 }

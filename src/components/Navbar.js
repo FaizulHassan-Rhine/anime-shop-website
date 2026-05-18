@@ -17,79 +17,87 @@ export default function Navbar() {
   const { count } = useCart();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-black/90 backdrop-blur-xl">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:h-16 sm:px-6 lg:px-8">
-        <Link href="/" className="group flex shrink-0 items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-neon-orange text-base font-black text-black shadow-neon sm:h-9 sm:w-9 sm:text-lg">
-            A
-          </span>
-          <span className="font-display text-base font-bold tracking-tight text-white sm:text-lg">
-            Aura<span className="text-neon-orange">Cards</span>
-          </span>
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
+        className="pointer-events-auto relative mx-auto max-w-7xl overflow-hidden rounded-full border border-white/[0.14] bg-white/[0.06] shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl backdrop-saturate-150 supports-[backdrop-filter]:bg-white/[0.04]"
+      >
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/[0.14] via-white/[0.04] to-transparent"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent"
+        />
+
+        <div className="relative z-10 flex items-center justify-between gap-3 px-3 py-2 sm:gap-4 sm:px-5 sm:py-2.5">
+        <Link
+          href="/"
+          className="shrink-0 text-base font-bold tracking-wide text-neon-orange sm:text-lg"
+        >
+          TCG Shop <span className="text-white/90">BD</span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-1 md:flex lg:gap-2">
           {links.map((l) => {
             const active = pathname === l.href;
             return (
               <Link
                 key={l.href}
                 href={l.href}
-                className={`relative rounded-lg px-3 py-2 text-sm font-medium transition ${
-                  active ? "text-white" : "text-white/60 hover:text-white"
+                className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
+                  active
+                    ? "border border-white/10 bg-white/[0.12] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-md"
+                    : "text-white/55 hover:bg-white/[0.06] hover:text-white/90"
                 }`}
               >
                 {l.label}
-                {active ? (
-                  <motion.span
-                    layoutId="nav-pill"
-                    className="absolute inset-0 -z-10 rounded-lg bg-white/10 ring-1 ring-white/10"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                ) : null}
               </Link>
             );
           })}
-        </nav>
+          </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <nav className="flex items-center gap-0.5 md:hidden">
+            {links.map((l) => {
+              const active = pathname === l.href;
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium transition ${
+                    active
+                      ? "border border-white/10 bg-white/[0.12] text-white backdrop-blur-md"
+                      : "text-white/50 hover:bg-white/[0.06] hover:text-white/80"
+                  }`}
+                >
+                  {l.label}
+                </Link>
+              );
+            })}
+          </nav>
+
           <Link
             href="/cart"
-            className="relative flex h-9 items-center justify-center rounded-xl border border-white/15 bg-white/5 px-3 text-xs font-semibold text-white backdrop-blur transition hover:border-neon-orange/60 hover:bg-white/10 sm:h-10 sm:px-4 sm:text-sm"
+            className="relative inline-flex shrink-0 items-center justify-center rounded-full border border-neon-orange/30 bg-neon-orange/95 px-4 py-2 text-xs font-bold text-black shadow-[0_4px_16px_rgba(212,175,55,0.25),inset_0_1px_0_rgba(255,255,255,0.25)] transition hover:bg-neon-orange sm:px-5 sm:text-sm"
           >
             Cart
             {count > 0 ? (
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-neon-orange px-1 text-[10px] font-bold text-black"
+                className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-black/90 px-1 text-[9px] font-bold text-neon-orange ring-2 ring-white/20 backdrop-blur-sm"
               >
                 {count > 99 ? "99+" : count}
               </motion.span>
             ) : null}
           </Link>
         </div>
-      </div>
-      <nav className="border-t border-white/5 md:hidden">
-        <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-3 py-2 sm:px-6">
-          {links.map((l) => {
-            const active = pathname === l.href;
-            return (
-              <Link
-                key={l.href}
-                href={l.href}
-                className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${
-                  active
-                    ? "bg-white/15 text-white"
-                    : "text-white/55 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                {l.label}
-              </Link>
-            );
-          })}
         </div>
-      </nav>
+      </motion.div>
     </header>
   );
 }

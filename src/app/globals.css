@@ -15,6 +15,14 @@ body {
   background-attachment: fixed;
 }
 
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 20%, transparent 75%);
+}
+
 ::selection {
   @apply bg-neon-orange/60 text-white;
 }
@@ -22,5 +30,38 @@ body {
 .aura-ring {
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 0 55px rgba(251, 146, 60, 0.14);
+    0 0 55px rgba(212, 175, 55, 0.14);
+}
+
+@keyframes series-ticker {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.series-ticker-viewport {
+  width: 100%;
+}
+
+.series-ticker-track {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  animation: series-ticker 45s linear infinite;
+}
+
+.series-ticker-viewport:hover .series-ticker-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .series-ticker-track {
+    animation: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
 }

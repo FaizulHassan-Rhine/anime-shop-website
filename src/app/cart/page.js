@@ -1,13 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import CartItem from "@/components/CartItem";
 import Button from "@/components/Button";
+import CheckoutContactModal from "@/components/CheckoutContactModal";
 
 export default function CartPage() {
   const { items, total, hydrated } = useCart();
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   if (!hydrated) {
     return (
@@ -52,11 +55,22 @@ export default function CartPage() {
               <span>${total.toFixed(2)}</span>
             </div>
             <p className="text-xs text-white/45">
-              Checkout is a placeholder — connect Stripe / PayPal here later.
+              Tap checkout and message us on WhatsApp or Messenger to confirm
+              your order.
             </p>
-            <Button type="button" className="w-full sm:w-auto" variant="secondary">
-              Checkout (coming soon)
+            <Button
+              type="button"
+              className="w-full sm:w-auto"
+              variant="secondary"
+              onClick={() => setCheckoutOpen(true)}
+            >
+              Checkout
             </Button>
+            <CheckoutContactModal
+              open={checkoutOpen}
+              onClose={() => setCheckoutOpen(false)}
+              total={total}
+            />
             <Link
               href="/shop"
               className="text-center text-sm font-semibold text-neon-orange hover:underline"

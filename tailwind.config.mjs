@@ -12,15 +12,15 @@ const config = {
         surface: "#080808",
         glass: "rgba(0, 0, 0, 0.72)",
         neon: {
-          purple: "#fb923c",
-          pink: "#fb923c",
-          blue: "#fb923c",
-          orange: "#fb923c",
-          red: "#fb923c",
+          purple: "#D4AF37",
+          pink: "#D4AF37",
+          blue: "#D4AF37",
+          orange: "#D4AF37",
+          red: "#D4AF37",
         },
       },
       fontFamily: {
-        display: ["var(--font-display)", "system-ui", "sans-serif"],
+        display: ["var(--font-sans)", "system-ui", "sans-serif"],
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
       backgroundImage: {
@@ -28,7 +28,7 @@ const config = {
         "seigaiha": "none",
       },
       boxShadow: {
-        neon: "0 0 32px rgba(251, 146, 60, 0.28)",
+        neon: "0 0 32px rgba(212, 175, 55, 0.28)",
         card: "0 25px 50px -12px rgba(0, 0, 0, 0.65)",
       },
       animation: {

@@ -13,7 +13,7 @@ export default function Footer() {
         <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
           <div>
             <p className="font-display text-xl font-bold text-white">
-              Aura<span className="text-neon-orange">Cards</span>
+              TCG Shop <span className="text-neon-orange">BD</span>
             </p>
             <p className="mt-2 max-w-sm text-sm text-white/55">
               Premium anime trading cards — curated, protected, and shipped for
@@ -52,7 +52,7 @@ export default function Footer() {
           </div>
         </div>
         <p className="mt-10 border-t border-white/10 pt-8 text-center text-xs text-white/40">
-          © {new Date().getFullYear()} AuraCards. Demo storefront — replace
+          © {new Date().getFullYear()} TCG Shop BD. Demo storefront — replace
           branding and legal copy before launch.
         </p>
       </div>
