@@ -86,12 +86,24 @@ export const products = [
 export const categories = [
   "Naruto",
   "One Piece",
-  "Dragon Ball",
-  "Demon Slayer",
   "Jujutsu Kaisen",
+  "Pokémon",
+  "Yu-Gi-Oh!",
+  "FIFA",
 ];
 
-export const rarities = ["SSR", "MR", "Rare", "Premium", "SR", "UR"];
+export const rarities = [
+  "SR",
+  "SSR",
+  "UR",
+  "AR",
+  "OR",
+  "PU",
+  "MR",
+  "SP",
+  "Rare",
+  "Premium",
+];
 
 export function getProductById(id) {
   return products.find((p) => p.id === id) ?? null;

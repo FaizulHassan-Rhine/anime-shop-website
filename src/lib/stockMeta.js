@@ -1,3 +1,5 @@
+import { products } from "@/data/products";
+
 const glowCycle = ["orange", "purple", "red", "blue"];
 
 export function getGlowForIndex(index) {
@@ -48,4 +50,9 @@ export function getStockMeta(product, index = 0) {
     badge: null,
     originalPrice: null,
   };
+}
+
+export function getStockForProduct(product) {
+  const index = products.findIndex((p) => p.id === product.id);
+  return getStockMeta(product, index >= 0 ? index : 0);
 }

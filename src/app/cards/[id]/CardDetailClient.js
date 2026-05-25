@@ -5,12 +5,13 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 import Button from "@/components/Button";
+import { getStockForProduct } from "@/lib/stockMeta";
 
-function stockBadge(status) {
+function stockBadge(status, remaining) {
   if (status === "low-stock")
     return (
       <span className="rounded-full bg-neon-orange/20 px-3 py-1 text-xs font-bold text-neon-orange">
-        Low stock
+        Low stock{remaining > 0 ? ` · ${remaining} left` : ""}
       </span>
     );
   if (status === "pre-order")
@@ -22,6 +23,7 @@ function stockBadge(status) {
   return (
     <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-bold text-emerald-300">
       In stock
+      {remaining > 0 ? ` · ${remaining} left` : ""}
     </span>
   );
 }
@@ -30,6 +32,15 @@ export default function CardDetailClient({ product }) {
   const { addToCart } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const stock = getStockForProduct(product);
+  const maxQty =
+    product.stockStatus === "pre-order"
+      ? 99
+      : Math.max(1, stock.remaining);
+  const pct =
+    stock.total > 0
+      ? Math.round((stock.remaining / stock.total) * 100)
+      : 0;
 
   function handleAdd() {
     addToCart(product.id, qty);
@@ -70,7 +81,7 @@ export default function CardDetailClient({ product }) {
           <span className="rounded-lg bg-white/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white/80">
             {product.anime}
           </span>
-          {stockBadge(product.stockStatus)}
+          {stockBadge(product.stockStatus, stock.remaining)}
         </div>
         <h1 className="mt-4 font-display text-3xl font-bold leading-tight text-white sm:text-4xl">
           {product.name}
@@ -78,6 +89,45 @@ export default function CardDetailClient({ product }) {
         <p className="mt-4 text-lg font-bold text-neon-orange">
           ${product.price.toFixed(2)}
         </p>
+
+        <div className="mt-5 max-w-md rounded-xl border border-white/10 bg-white/[0.04] p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/40">
+              Availability
+            </p>
+            {stock.badge ? (
+              <span className="rounded border border-neon-orange/40 bg-neon-orange/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-neon-orange">
+                {stock.badge}
+              </span>
+            ) : null}
+          </div>
+          <p className="mt-2 text-sm font-semibold text-white">
+            {product.stockStatus === "pre-order" ? (
+              "Pre-order — not in stock yet"
+            ) : (
+              <>
+                <span className="text-neon-orange">{stock.remaining}</span>
+                <span className="text-white/50">
+                  {" "}
+                  of {stock.total} cards available
+                </span>
+              </>
+            )}
+          </p>
+          {product.stockStatus !== "pre-order" ? (
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+              <div
+                className={`h-full rounded-full transition-all ${
+                  product.stockStatus === "low-stock"
+                    ? "bg-red-500"
+                    : "bg-neon-orange"
+                }`}
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+          ) : null}
+        </div>
+
         <dl className="mt-6 grid grid-cols-2 gap-4 text-sm sm:max-w-md">
           <div className="rounded-xl border border-white/10 bg-white/5 p-3">
             <dt className="text-xs uppercase tracking-wider text-white/45">
@@ -114,10 +164,12 @@ export default function CardDetailClient({ product }) {
             <input
               type="number"
               min={1}
-              max={99}
+              max={maxQty}
               value={qty}
               onChange={(e) =>
-                setQty(Math.max(1, Math.min(99, Number(e.target.value) || 1)))
+                setQty(
+                  Math.max(1, Math.min(maxQty, Number(e.target.value) || 1))
+                )
               }
               className="w-20 rounded-xl border border-white/15 bg-black px-3 py-2 text-white focus:border-neon-orange focus:outline-none"
             />

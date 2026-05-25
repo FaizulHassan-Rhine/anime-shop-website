@@ -1,13 +1,15 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useMemo, useState, useCallback } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import GrailsCatalogHeader from "@/components/GrailsCatalogHeader";
 import GrailsFilters from "@/components/GrailsFilters";
 import GrailsProductGrid from "@/components/GrailsProductGrid";
 import { products, categories } from "@/data/products";
 
 const categoryFilters = ["All", ...categories];
+
+const SUGGESTED_RARITIES = ["SR", "SSR", "UR", "AR", "OR", "PU", "MR", "SP"];
 
 const SORTS = [
   { id: "featured", label: "Featured" },
@@ -21,21 +23,71 @@ function matchesRareCollection(p) {
 }
 
 export default function ShopClient() {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [category, setCategory] = useState("All");
-  const [rarity, setRarity] = useState("All");
-  const [rarePreset, setRarePreset] = useState(false);
+
+  const category = searchParams.get("category") ?? "All";
+  const rarePreset =
+    searchParams.get("preset") === "rare" ||
+    searchParams.get("filter") === "rare";
+
+  const rarity = searchParams.get("rarity") ?? "All";
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("featured");
 
-  useEffect(() => {
-    const cat = searchParams.get("category");
-    const preset = searchParams.get("preset");
-    const filter = searchParams.get("filter");
-    if (cat) setCategory(cat);
-    else setCategory("All");
-    setRarePreset(preset === "rare" || filter === "rare");
-  }, [searchParams]);
+  const replaceParams = useCallback(
+    (mutate) => {
+      const params = new URLSearchParams(searchParams.toString());
+      mutate(params);
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    },
+    [searchParams, pathname, router]
+  );
+
+  const handleCategoryChange = useCallback(
+    (next) => {
+      replaceParams((params) => {
+        if (next === "All") params.delete("category");
+        else params.set("category", next);
+        if (next !== "Naruto" && params.has("rarity")) params.delete("rarity");
+      });
+    },
+    [replaceParams]
+  );
+
+  const handleRarityChange = useCallback(
+    (next) => {
+      replaceParams((params) => {
+        if (next === "All") params.delete("rarity");
+        else params.set("rarity", next);
+      });
+    },
+    [replaceParams]
+  );
+
+  const handleSuggestedRarity = useCallback(
+    (value) => {
+      handleRarityChange(rarity === value ? "All" : value);
+    },
+    [rarity, handleRarityChange]
+  );
+
+  const handleRarePresetToggle = useCallback(
+    (enabled) => {
+      replaceParams((params) => {
+        if (enabled) {
+          params.set("preset", "rare");
+          params.delete("filter");
+        } else {
+          params.delete("preset");
+          params.delete("filter");
+        }
+      });
+    },
+    [replaceParams]
+  );
 
   const filtered = useMemo(() => {
     const list = products.filter((p) => {
@@ -69,19 +121,45 @@ export default function ShopClient() {
   }, [category, rarity, query, rarePreset, sort]);
 
   const toolbar = (
-    <div className="flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="relative w-full sm:max-w-xs">
-        <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search cards, rarity, wave…"
-          className="w-full rounded-lg border border-white/10 bg-black py-2.5 pl-9 pr-3 text-sm text-white placeholder:text-white/35 transition focus:border-neon-orange/50 focus:outline-none focus:ring-1 focus:ring-neon-orange/40"
-        />
+    <div className="flex flex-col gap-4 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 lg:flex-row lg:items-start lg:justify-between">
+      <div className="min-w-0 w-full flex-1">
+        <div className="relative max-w-md">
+          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search cards, rarity, wave…"
+            className="w-full rounded-lg border border-white/10 bg-black py-2.5 pl-9 pr-3 text-sm text-white placeholder:text-white/35 transition focus:border-neon-orange/50 focus:outline-none focus:ring-1 focus:ring-neon-orange/40"
+          />
+        </div>
+        {category === "Naruto" ? (
+          <div className="mt-3 flex flex-nowrap items-center gap-1.5 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <span className="shrink-0 pr-0.5 text-[10px] font-bold uppercase tracking-wider text-white/35">
+              Suggested
+            </span>
+            {SUGGESTED_RARITIES.map((r) => {
+              const active = rarity === r;
+              return (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => handleSuggestedRarity(r)}
+                  className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider transition ${
+                    active
+                      ? "border-neon-orange/60 bg-neon-orange/10 text-neon-orange"
+                      : "border-white/10 bg-black/40 text-white/50 hover:border-white/25 hover:text-white/80"
+                  }`}
+                >
+                  {r}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 text-xs text-white/50">
+      <div className="flex shrink-0 flex-wrap items-center gap-3 text-xs text-white/50 lg:pt-1">
         <span>
           <span className="font-bold text-white">{filtered.length}</span> of{" "}
           {products.length} cards
@@ -103,7 +181,7 @@ export default function ShopClient() {
         {rarePreset ? (
           <button
             type="button"
-            onClick={() => setRarePreset(false)}
+            onClick={() => handleRarePresetToggle(false)}
             className="rounded-full border border-neon-orange/40 bg-neon-orange/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-neon-orange transition hover:bg-neon-orange/15"
           >
             Rare collection ✕
@@ -111,7 +189,7 @@ export default function ShopClient() {
         ) : (
           <button
             type="button"
-            onClick={() => setRarePreset(true)}
+            onClick={() => handleRarePresetToggle(true)}
             className="rounded-full border border-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white/50 transition hover:border-white/20 hover:text-white"
           >
             Rare only
@@ -133,9 +211,9 @@ export default function ShopClient() {
         <GrailsFilters
           categories={categoryFilters}
           category={category}
-          onCategoryChange={setCategory}
+          onCategoryChange={handleCategoryChange}
           rarity={rarity}
-          onRarityChange={setRarity}
+          onRarityChange={handleRarityChange}
           trailing={toolbar}
         />
 
